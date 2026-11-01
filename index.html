@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>我的第一个网页 · My First Webpage</title>
+  <meta name="description" content="一个纯静态 HTML 单页示例：渐变背景、玻璃卡片、深色模式切换与实时时钟。" />
+  <style>
+    :root {
+      --bg-deep: #0b1020;
+      --bg-soft: #131a2e;
+      --text-main: #e8ecf8;
+      --text-dim: #98a3c3;
+      --accent: #6c8cff;
+      --accent-2: #a06cff;
+      --card: rgba(255, 255, 255, 0.06);
+      --card-border: rgba(255, 255, 255, 0.12);
+      --radius: 18px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      min-height: 100vh;
+      font-family: "PingFang SC", "Microsoft YaHei", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      color: var(--text-main);
+      background:
+        radial-gradient(900px 600px at 12% -10%, rgba(108, 140, 255, 0.35), transparent 60%),
+        radial-gradient(800px 500px at 95% 8%, rgba(160, 108, 255, 0.28), transparent 55%),
+        linear-gradient(160deg, var(--bg-deep), var(--bg-soft) 55%, #0a0f1e);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 56px 20px 40px;
+      overflow-x: hidden;
+    }
+
+    /* 背景装饰光斑 */
+    .orb {
+      position: fixed;
+      border-radius: 50%;
+      filter: blur(90px);
+      opacity: 0.5;
+      pointer-events: none;
+      z-index: 0;
+      animation: float 14s ease-in-out infinite;
+    }
+    .orb-1 { width: 320px; height: 320px; background: #4f6bff; top: -80px; left: -80px; }
+    .orb-2 { width: 260px; height: 260px; background: #a06cff; bottom: 5%; right: -60px; animation-delay: -6s; }
+
+    @keyframes float {
+      0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+      50% { transform: translate3d(20px, -26px, 0) scale(1.08); }
+    }
+
+    .wrap {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      max-width: 960px;
+    }
+
+    /* 顶部导航 */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 64px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+      letter-spacing: 0.4px;
+    }
+
+    .brand-mark {
+      width: 34px;
+      height: 34px;
+      border-radius: 10px;
+      display: grid;
+      place-items: center;
+      font-size: 16px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 8px 22px rgba(108, 140, 255, 0.35);
+    }
+
+    .pill {
+      border: 1px solid var(--card-border);
+      background: var(--card);
+      backdrop-filter: blur(12px);
+      color: var(--text-dim);
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 13px;
+      cursor: pointer;
+      transition: transform 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+    }
+    .pill:hover { transform: translateY(-1px); border-color: rgba(255,255,255,0.28); color: var(--text-main); }
+
+    /* Hero */
+    .hero { text-align: center; padding: 8px 0 12px; }
+
+    .hero-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: var(--text-dim);
+      border: 1px dashed var(--card-border);
+      border-radius: 999px;
+      padding: 7px 14px;
+      margin-bottom: 22px;
+    }
+    .hero-tag .dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: #59e0a6;
+      box-shadow: 0 0 0 4px rgba(89, 224, 166, 0.15);
+      animation: pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 0 4px rgba(89, 224, 166, 0.15); }
+      50% { box-shadow: 0 0 0 8px rgba(89, 224, 166, 0.02); }
+    }
+
+    h1 {
+      font-size: clamp(32px, 6vw, 58px);
+      line-height: 1.14;
+      letter-spacing: -0.5px;
+      margin-bottom: 20px;
+    }
+    h1 .grad {
+      background: linear-gradient(100deg, #8fabff, #c39bff 55%, #7ee7d0);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero p {
+      max-width: 620px;
+      margin: 0 auto 34px;
+      color: var(--text-dim);
+      font-size: clamp(15px, 2.2vw, 17px);
+      line-height: 1.75;
+    }
+
+    .actions {
+      display: flex;
+      gap: 14px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 13px 24px;
+      border-radius: 999px;
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      text-decoration: none;
+      transition: transform 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+    .btn-primary {
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      box-shadow: 0 12px 30px rgba(108, 140, 255, 0.34);
+    }
+    .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 18px 38px rgba(108, 140, 255, 0.45); }
+    .btn-ghost {
+      background: var(--card);
+      border-color: var(--card-border);
+      color: var(--text-main);
+      backdrop-filter: blur(10px);
+    }
+    .btn-ghost:hover { transform: translateY(-2px); border-color: rgba(255,255,255,0.3); }
+
+    /* 卡片 */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+      margin-top: 68px;
+    }
+
+    .card {
+      position: relative;
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 24px 22px;
+      backdrop-filter: blur(14px);
+      transition: transform 0.22s ease, border-color 0.22s ease, background 0.22s ease;
+      overflow: hidden;
+    }
+    .card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(130deg, rgba(108,140,255,0.14), transparent 42%);
+      opacity: 0;
+      transition: opacity 0.22s ease;
+      pointer-events: none;
+    }
+    .card:hover { transform: translateY(-4px); border-color: rgba(255,255,255,0.24); }
+    .card:hover::after { opacity: 1; }
+
+    .card-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 19px;
+      margin-bottom: 16px;
+      background: rgba(108, 140, 255, 0.16);
+      border: 1px solid rgba(108, 140, 255, 0.25);
+    }
+
+    .card h3 { font-size: 17px; margin-bottom: 8px; }
+    .card p { color: var(--text-dim); font-size: 14px; line-height: 1.7; }
+
+    /* 页脚 */
+    footer {
+      position: relative;
+      z-index: 1;
+      margin-top: 72px;
+      width: 100%;
+      max-width: 960px;
+      padding-top: 26px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      color: var(--text-dim);
+      font-size: 13px;
+    }
+
+    /* 深色 / 浅色 主题 */
+    body.light {
+      --bg-deep: #f5f7ff;
+      --bg-soft: #eef1fb;
+      --text-main: #131a2e;
+      --text-dim: #5a6580;
+      --card: rgba(255, 255, 255, 0.75);
+      --card-border: rgba(19, 26, 46, 0.12);
+      background:
+        radial-gradient(900px 600px at 12% -10%, rgba(108, 140, 255, 0.20), transparent 60%),
+        radial-gradient(800px 500px at 95% 8%, rgba(160, 108, 255, 0.16), transparent 55%),
+        linear-gradient(160deg, var(--bg-deep), var(--bg-soft) 55%, #fbfcff);
+    }
+
+    @media (max-width: 560px) {
+      body { padding-top: 36px; }
+      header { margin-bottom: 44px; }
+      .grid { margin-top: 48px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      * { animation: none !important; transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb orb-1" aria-hidden="true"></div>
+  <div class="orb orb-2" aria-hidden="true"></div>
+
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <span class="brand-mark" aria-hidden="true">✦</span>
+        <span>my-first-webpage</span>
+      </div>
+      <button class="pill" id="themeBtn" type="button">🌙 切换深色 / 浅色</button>
+    </header>
+
+    <main class="hero">
+      <div class="hero-tag">
+        <span class="dot" aria-hidden="true"></span>
+        <span>纯静态单文件页面 · 无需构建</span>
+      </div>
+
+      <h1>
+        你好，<span class="grad">世界</span><br />
+        这是我的第一个网页
+      </h1>
+
+      <p>
+        一个用 HTML + CSS + 原生 JavaScript 写的单页示例。没有框架、没有依赖，
+        打开浏览器就能看，也可以直接部署到 GitHub Pages。
+      </p>
+
+      <div class="actions">
+        <a class="btn btn-primary" href="https://github.com/rongnas/my-first-webpage" target="_blank" rel="noopener">
+          查看源码 ↗
+        </a>
+        <button class="btn btn-ghost" id="helloBtn" type="button">点我打个招呼 👋</button>
+      </div>
+
+      <div class="grid">
+        <article class="card">
+          <div class="card-icon" aria-hidden="true">🎨</div>
+          <h3>纯 CSS 视觉</h3>
+          <p>渐变背景、玻璃拟态卡片与柔和光斑，全部由 CSS 绘制，零图片依赖。</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true">⚡</div>
+          <h3>零依赖</h3>
+          <p>单个 <code>index.html</code> 文件，双击即可运行，方便托管在任意静态服务器。</p>
+        </article>
+        <article class="card">
+          <div class="card-icon" aria-hidden="true">📱</div>
+          <h3>自适应布局</h3>
+          <p>使用 Grid 与 <code>clamp()</code>，在手机、平板和桌面端都能整齐显示。</p>
+        </article>
+      </div>
+    </main>
+
+    <footer>
+      <span>© <span id="year">2026</span> rongnas · 用 HTML 手写的页面</span>
+      <span id="clock">--:--:--</span>
+    </footer>
+  </div>
+
+  <script>
+    // 年份
+    document.getElementById('year').textContent = new Date().getFullYear();
+
+    // 实时时钟
+    const clock = document.getElementById('clock');
+    const tick = () => {
+      const d = new Date();
+      const pad = (n) => String(n).padStart(2, '0');
+      clock.textContent = pad(d.getHours()) + ':' + pad(d.getMinutes()) + ':' + pad(d.getSeconds());
+    };
+    tick();
+    setInterval(tick, 1000);
+
+    // 深浅色切换（记忆到 localStorage）
+    const themeBtn = document.getElementById('themeBtn');
+    const saved = localStorage.getItem('theme');
+    if (saved === 'light') document.body.classList.add('light');
+    themeBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light');
+      localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
+    });
+
+    // 打招呼按钮
+    const helloBtn = document.getElementById('helloBtn');
+    let count = 0;
+    helloBtn.addEventListener('click', () => {
+      count += 1;
+      helloBtn.textContent = count === 1 ? '你好呀！👋' : '你点了我 ' + count + ' 次 🎉';
+    });
+  </script>
+</body>
+</html>
